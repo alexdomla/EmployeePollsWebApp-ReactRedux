@@ -9,6 +9,23 @@ import { useEffect } from "react";
 import { connect } from "react-redux";
 import { handleInitialData } from "../actions/shared";
 import LoadingBar from "react-redux-loading-bar";
+import { useSelector } from "react-redux";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
+
+import Nav from "./Nav";
+
+const ProtectedRoute = ({ children }) => {
+  const { authedUser } = useSelector((state) => state);
+  const location = useLocation();
+  return authedUser ? (
+    <>
+      <Nav />
+      <Outlet />
+    </>
+  ) : (
+    <Login redirectTo={location.pathname} />
+  );
+};
 
 function App(props) {
   // call the handleInitialData action creator when App component mounts
@@ -23,40 +40,15 @@ function App(props) {
       {
         // define the app routes using the Routes component from react-router-dom
         <Routes>
-          {/* the dashboard is shown by default when a user is logged in */}
-          <Route
-            path="/"
-            element={
-              props.loading === false && props.isLoggedIn === true ? (
-                <Dashboard />
-              ) : (
-                <Login />
-              )
-            }
-          />
-          {/* the login page */}
-          <Route path="/login" exact element={<Login />} />
-          {/* the leaderboard page */}
-          <Route
-            path="/leaderboard"
-            exact
-            element={props.isLoggedIn ? <Leaderboard /> : <Login />}
-          />
-          {/* the add poll page */}
-          <Route
-            path="/add"
-            exact
-            element={props.isLoggedIn ? <Add /> : <Login />}
-          />
-          {/* the poll details page */}
-          <Route
-            path="/questions/:id"
-            element={props.isLoggedIn ? <QuestionDetails /> : <Login />}
-          />
-          {/* the 404 page */}
-          <Route path="/404" exact element={<NotFound />} />
-          {/* the catch-all 404 page */}
-          <Route path="*" element={<NotFound />} />
+          <Route path="/" element={<ProtectedRoute />}>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/leaderboard" element={<Leaderboard />} />
+            <Route path="/questions/:id" element={<QuestionDetails />} />
+            <Route path="/add" element={<Add />} />
+            <Route path="*" element={<NotFound />} />
+            <Route path="/404" element={<NotFound />} />
+          </Route>
+          <Route path="/login" element={<Login />} />
         </Routes>
       }
     </div>

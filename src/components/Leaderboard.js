@@ -1,13 +1,10 @@
 import React from "react";
 import { connect } from "react-redux";
-import Nav from "./Nav";
 
 // This component displays the leaderboard with user scores.
 const Leaderboard = ({ authedUser, users }) => {
   return (
     <div className="leaderboardPage">
-      {/* If the user is authenticated, show the navigation bar */}
-      {authedUser ? <Nav></Nav> : null}
       <h1>Leaderboard Page</h1>
       <table className="">
         <thead className="">

@@ -3,7 +3,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { useState } from "react";
 import { handleLogin } from "../actions/authedUser";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 // Define the Login component
 const Login = ({ dispatch, isLoggedIn }) => {
@@ -27,7 +27,7 @@ const Login = ({ dispatch, isLoggedIn }) => {
   };
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = (e, defaultRoute = "/") => {
     e.preventDefault();
     if (!username || !password) {
       // If username or password is not entered, show error message
@@ -38,12 +38,11 @@ const Login = ({ dispatch, isLoggedIn }) => {
 
     // Dispatch action to log in user with entered credentials
     dispatch(handleLogin(username, password));
-    navigate("/");
 
-    // Reset username and password state variables and remove error message
-    setUsername("");
-    setPassword("");
-    setError(false);
+    // Redirect to home page if the user is authenticated
+    if (isLoggedIn) {
+      navigate(defaultRoute, { replace: true });
+    }
   };
 
   // Render the Login component
@@ -54,7 +53,7 @@ const Login = ({ dispatch, isLoggedIn }) => {
         <img src="./images/avatars.png" alt="" />
       </div>
       {error && (
-        <p data-testid="error-header">
+        <p data-testid="login-error-header">
           Please enter a correct username and a password.
         </p>
       )}
@@ -66,20 +65,23 @@ const Login = ({ dispatch, isLoggedIn }) => {
           name="fname"
           onChange={handleUsername}
           value={username}
-          data-testid="name-input"
+          data-testid="login-name-input"
         ></input>
         <label htmlFor="">Password</label>
         <input
-          type="text"
-          id="fname"
-          name="fname"
+          type="password"
+          id="password"
+          name="password"
           onChange={handlePassword}
           value={password}
-          data-testid="password-input"
+          data-testid="login-password-input"
         ></input>
-        <button type="submit" data-testid="submit-button">
-          Submit
-        </button>
+        <Link
+          to={{ pathname: "/login", state: { from: window.location } }}
+          onClick={(e) => handleSubmit(e, window.location.pathname)}
+        >
+          Login
+        </Link>
       </form>
     </div>
   );

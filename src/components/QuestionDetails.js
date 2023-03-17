@@ -1,14 +1,16 @@
 import { connect } from "react-redux";
 import React from "react";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { handleAddAnswer } from "../actions/questions";
-import Nav from "./Nav";
+import NotFound from "./NotFound";
 
-const QuestionDetails = ({ dispatch, authedUser, question, users }) => {
+const QuestionDetails = ({ dispatch, authedUser, questions, users }) => {
+  const { id } = useParams();
+  const question = questions?.[id];
   // Check if the authenticated user has voted for the first option
-  const hasVotedForOptionOne = question.optionOne.votes.includes(authedUser);
+  const hasVotedForOptionOne = question?.optionOne.votes.includes(authedUser);
   // Check if the authenticated user has voted for the second option
-  const hasVotedForOptionTwo = question.optionTwo.votes.includes(authedUser);
+  const hasVotedForOptionTwo = question?.optionTwo.votes.includes(authedUser);
   // Check if the authenticated user has voted for any option
   const hasVoted = hasVotedForOptionOne || hasVotedForOptionTwo;
 
@@ -18,9 +20,9 @@ const QuestionDetails = ({ dispatch, authedUser, question, users }) => {
   // Handle when the user clicks on the first option
   const handleOptionOne = (e) => {
     e.preventDefault();
-    console.log("running handleOptionOne" + question.id);
+    console.log("running handleOptionOne" + question?.id);
     // Dispatch an action to add the answer for the first option
-    dispatch(handleAddAnswer(question.id, "optionOne"));
+    dispatch(handleAddAnswer(question?.id, "optionOne"));
     // Navigate back to the home page
     navigate("/");
   };
@@ -29,15 +31,15 @@ const QuestionDetails = ({ dispatch, authedUser, question, users }) => {
   const handleOptionTwo = (e) => {
     e.preventDefault();
     // Dispatch an action to add the answer for the second option
-    dispatch(handleAddAnswer(question.id, "optionTwo"));
+    dispatch(handleAddAnswer(question?.id, "optionTwo"));
     // Navigate back to the home page
     navigate("/");
   };
 
-  return (
+  return questions?.[id] == null ? (
+    <NotFound />
+  ) : (
     <div className="pollPage">
-      {/* Render the Nav component */}
-      <Nav></Nav>
       <h1>Poll Details {}</h1>
       <p>
         Poll by {users[question.author].name}
@@ -127,14 +129,19 @@ const QuestionDetails = ({ dispatch, authedUser, question, users }) => {
 };
 
 const mapStateToProps = ({ authedUser, users, questions }) => {
-  try {
+  return {
+    authedUser,
+    users,
+    questions,
+  };
+  /*try {
     const question = Object.values(questions).find(
       (question) => question.id === useParams().id
     );
     return { authedUser, question, users };
   } catch (e) {
     return <Navigate to="/404" />;
-  }
+  }*/
 };
 
 export default connect(mapStateToProps)(QuestionDetails);

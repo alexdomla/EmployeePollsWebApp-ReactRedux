@@ -12,7 +12,7 @@ const Nav = ({ dispatch, authedUser, users }) => {
     e.preventDefault();
     console.log("You clicked");
     dispatch(handleLogout());
-    navigate("/login");
+    navigate("/");
   };
 
   return (

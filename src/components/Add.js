@@ -37,7 +37,6 @@ const Add = ({ dispatch, authedUser, isLoggedIn }) => {
   // Render the form for adding a new question
   return (
     <div className="newPage">
-      {authedUser ? <Nav></Nav> : null}
       <h1>Create Poll</h1>
       <p>Would you rather</p>
       <form onSubmit={handleSubmit}>
